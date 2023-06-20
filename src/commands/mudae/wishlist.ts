@@ -9,6 +9,9 @@ import { sendLoadingMessage } from '../../lib/utils';
 import { xiao } from '../../db/xiao';
 import type { Wish } from '../../db/schema/wishes';
 
+const upperFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const capitalize = (s: string) => s.split(' ').map(upperFirst).join(' ');
+
 @ApplyOptions<Command.Options>({
   aliases: ['wl', 'desejos'],
   description: 'Custom Mudae wishlist',
@@ -54,7 +57,6 @@ export class UserCommand extends Command {
       actions: [previousButton, nextButton]
     });
 
-
     const wishes = await xiao.getWishes(userId);
 
     if (wishes.length === 0) {
@@ -81,18 +83,19 @@ export class UserCommand extends Command {
 
       const description = [];
 
+
       if (characters.length > 0) {
         description.push('### Characters');
         description.push(...characters.map(wish =>
           wish.category ?
-            `${wish.target.toLocaleUpperCase()} (${wish.category}` :
-            `${wish.target}`)
+            `${capitalize(wish.target)} (${wish.category}` :
+            `${capitalize(wish.target)}`)
         );
       }
 
       if (series.length > 0) {
         description.push('### Series');
-        description.push(...series.map(wish => wish.target.toLocaleUpperCase()));
+        description.push(...series.map(wish => capitalize(wish.target)));
       }
 
       embed.setDescription(description.join('\n'));

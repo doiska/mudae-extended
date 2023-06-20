@@ -5,7 +5,8 @@ import { xiao } from '../../db/xiao';
 
 @ApplyOptions<Command.Options>({
   name: 'quero',
-  description: 'Custom Mudae wishlist'
+  description: 'Custom Mudae wishlist',
+  aliases: ['wish', 'desejo']
 })
 export class UserCommand extends Command {
 
@@ -52,7 +53,7 @@ export class UserCommand extends Command {
   public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
     registry.registerChatInputCommand({
       name: 'quero',
-      description: this.description
+      description: this.description,
     });
 
     registry.registerContextMenuCommand({
