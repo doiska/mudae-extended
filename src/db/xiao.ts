@@ -25,7 +25,7 @@ class _Xiao {
   }
 
   public async wish(userId: string, wish: Wish) {
-    const userWishes = await this.getWishes(userId)
+    const userWishes = await this.getWishes(userId);
 
     const hasWish = userWishes.some(w =>
       w.target.toLowerCase() === wish.target.toLowerCase() &&
@@ -36,13 +36,15 @@ class _Xiao {
       return;
     }
 
-    await db.insert(wishesTable).values({
+    const newWish = {
       userId,
       target: wish.target.toLowerCase(),
       type: wish.type
-    });
+    }
 
-    userWishes.push(wish);
+    await db.insert(wishesTable).values(newWish);
+
+    userWishes.push(newWish);
     this._wishes.set(userId, userWishes);
   }
 
@@ -60,15 +62,18 @@ class _Xiao {
   }
 
   public async setWishes(userId: string, wishes: Wish[]) {
-    this._wishes.set(userId, wishes);
+
+    const wishesLower = wishes.map(w => ({ ...w, target: w.target.toLowerCase() }));
+
+    this._wishes.set(userId, wishesLower);
 
     await db.delete(wishesTable).where(eq(wishesTable.userId, userId));
 
     await db.transaction((transaction) => {
-      const insertions = wishes.map(wish => {
+      const insertions = wishesLower.map(wish => {
         return {
           userId,
-          target: wish.target.toLowerCase(),
+          target: wish.target,
           type: wish.type
         }
       });
